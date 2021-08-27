@@ -1,0 +1,193 @@
+<html lang="us">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+      <meta http-equiv="Content-Script-Type" content="text/javascript">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+      <script src="main.js" type="text/javascript"></script>
+      <link rel="stylesheet" href="main.css">
+      <link rel="stylesheet" href="bootstrap.min.css">
+      <title>Slot</title>
+   </head>
+   <body>
+
+    <div class="Selected">
+
+       <div id="invite" class="Invite"><i class="text">Invite</i></div>
+       <div id="manage" class="Manage"><i class="text">Manage</i></div>
+
+    </div>
+
+
+
+        <div id="yuh" class="Container">
+            <h1></h1>
+            <money></money>
+            <div id="List" class="list"></div>
+        </div>
+
+        <div class="hire">
+            <div class="title">Invite List</div>
+            <div id="InviteList"></div>
+        </div>
+
+        <div id="content">
+            <img src="logo.png" style="width: 36px;">
+            <span></span>
+        </div>
+
+
+        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+         <script type="text/javascript">
+
+    $(function() {
+
+    var $body = $(".Container");
+    var $list2 = $("#List"); 
+    var $listInvite = $("#InviteList"); 
+    var $select = $(".Selected");
+    var $invite = $(".hire");
+    var InviteButton = $("#invite");
+    var ManageButton = $("#manage");
+
+    window.addEventListener('message', function(event) {
+
+        if (event.data.type == "Selector") {
+            $select.slideDown("slow"), function(){
+        }
+    }
+    });
+
+
+    window.addEventListener('message', function(event) {
+        if (event.data.type == "OpenInvite") {
+
+            $invite.slideDown("slow", function() {
+                $.each(event.data.invites, function(index,info) {
+
+                    var appendages = "<div id='invite" + info.value + "' class='InviteList'> <p class='Information'>Information: <span class='colblue'> "+ info.label + " </span></p>   <button id='"+ parseFloat(info.value, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() +"' class='invitebutton'>Invite</button> </div>";
+                    $("#InviteList").append(appendages);
+                    $( "#"+ parseFloat(info.value, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() +"").click(function() {
+                     InvitePlayer(info.value)
+                  });
+
+
+                })
+            });
+        }
+    });
+
+    window.addEventListener('message', function(event) {
+        if (event.data.type == "OpenBoss") {
+
+            $body.slideDown("slow", function() {
+                $.each(event.data.gang, function(index,info) {
+                    $("#yuh").find("h1").html("Gang Management: <span class='colpurp'>" + info.gang )
+                    $("#yuh").find("money").html("Dirty Money: <span class='colpurps'>" + info.gangmoney + "$" )
+
+                    var appendage = "<div id='identi" + info.Id + "' class='check'> <p class='Name'>Steam Name: <span class='colblue'> "+ info.Name + " </span></p>   <p class='Rank'>Rank: <span class='colblue'>"+ info.Rank +"</span> </p>  <p class='Iden'><span class='colpurp'>"+ info.Id +"</span> </p>   <p class='namelol'>Character Name: <span class='colblue'>"+ info.namelol +" "+ info.namelol2 + "</span> </p>  <button id='demote" + parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + info.Name + "' class='Demote'>Demote</button>      <button id='" + parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + info.Name + "' class='Promote'>Promote</button>              <button id='test"+ parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() +info.Name+"' class='Kick'>Kick</button> </div>";
+                    $("#List").append(appendage);
+   
+                    $( "#test"+ parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() +info.Name+"").click(function() {
+                     KickPlayer(info.Id,info.Name)
+                  });
+
+                  $( "#demote"+ parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() +info.Name+"").click(function() {
+                    DemotePlayer(info.Id,info.Name)
+                  });
+
+                    $( "#" + parseFloat(info.Id, 10).toFixed(0).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + info.Name + "").click(function() {
+                        console.log("Pressed Promote Button")
+                        Promote(info.Id)
+                    });
+
+
+                })
+            });
+        }
+    });
+
+    ManageButton.click(function(){
+        $select.fadeOut("slow")
+
+        $.post('http://esx-gangs/EnableManage', JSON.stringify({
+            quit:true
+        }))
+        Quit()
+    });
+
+    InviteButton.click(function(){
+        $select.fadeOut("slow")
+
+        $.post('http://esx-gangs/EnableInvite', JSON.stringify({
+            quit:true
+        }))
+        Quit()
+    });
+
+    function Quit()
+
+    {
+        $body.fadeOut("slow")
+        $list2.empty()
+        $invite.fadeOut("slow")
+        $listInvite.empty()
+        $.post('http://esx-gangs/closemenu', JSON.stringify({
+                quit: true})
+            );
+    }
+
+    function Promote(data) {
+        $.post('http://esx-gangs/PromotePlayer', JSON.stringify({
+            ident:  data,
+        }))
+        Quit()
+
+    }
+
+    function InvitePlayer(datsa) {
+        console.log("function ran")
+        $.post('http://esx-gangs/InvitePlayer', JSON.stringify({
+            idshit:  datsa,
+        }))
+        Quit()
+
+    }
+    
+    function KickPlayer(data,data2) {
+        $.post('http://esx-gangs/KickPlayer', JSON.stringify({
+            ident:  data,
+            playername:  data2,
+        }))
+        Quit()
+    }
+
+    function DemotePlayer(data,data2) {
+        $.post('http://esx-gangs/DemotePlayer', JSON.stringify({
+            ident:  data,
+            playername:  data2,
+        }))
+        Quit()
+    }
+    
+    document.onkeyup = function (data) {
+
+        if (data.which == 27) {
+
+            $body.fadeOut("slow")
+            $select.fadeOut("slow")
+            $invite.fadeOut("slow")
+            $list2.empty()
+            $listInvite.empty()
+
+            $.post('http://esx-gangs/closemenu', JSON.stringify({
+                quit: true})
+            );
+        }
+    }
+})
+     </script>
+   </body>
+</html>
