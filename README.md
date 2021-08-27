@@ -8,6 +8,6 @@
 
 ### Preview
 
-[![bg][banners]][website]
 
-[banners]: https://streamable.com/1x4zef
+
+https://streamable.com/1x4zef
