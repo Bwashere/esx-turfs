@@ -158,7 +158,7 @@ local function InsertPlayer(ident, gang_name, ranking)
     local xPlayer = ESX.GetPlayerFromIdentifier(ident)
     if (xPlayer ~= nil) then
         if (xPlayer.source ~= nil) then
-            MySQL.Sync.execute("UPDATE users SET gang=@gang, gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang'] = gang_name, ['@gang_rank'] = ranking, ['@identifier'] = ident})
+            exports.ghmattimysql:execute("UPDATE users SET gang=@gang, gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang'] = gang_name, ['@gang_rank'] = ranking, ['@identifier'] = ident})
             TriggerClientEvent('mythic_notify:client:SendAlert', xPlayer.source, { type = 'inform', text = player.firstname .. " " .. player.lastname .. " was set as ".. gang_data.label .. ": ".. rank_data.label ..".", length = 5000 })
             RemovePlayerData(xPlayer.source)
             InitializePlayerData(xPlayer.source)
@@ -173,7 +173,7 @@ local function InvitePlayer(ident, gang_name)
     local xPlayer = ESX.GetPlayerFromIdentifier(ident)
     if (xPlayer ~= nil) then
         if (xPlayer.source ~= nil) then
-            MySQL.Sync.execute("UPDATE users SET gang=@gang, gang_rank=0 WHERE identifier=@identifier", {['@gang'] = gang_name, ['@identifier'] = ident})
+            exports.ghmattimysql:execute("UPDATE users SET gang=@gang, gang_rank=0 WHERE identifier=@identifier", {['@gang'] = gang_name, ['@identifier'] = ident})
             TriggerClientEvent('mythic_notify:client:SendAlert', xPlayer.source, { type = 'inform', text = player.firstname .. " " .. player.lastname .. " was accepted into ".. gang_data.label .. ".", length = 5000 })
             RemovePlayerData(xPlayer.source)
             InitializePlayerData(xPlayer.source)
@@ -188,7 +188,7 @@ local function FirePlayer(ident)
     local xPlayer = ESX.GetPlayerFromIdentifier(ident)
     if (xPlayer ~= nil) then
         if (xPlayer.source ~= nil) then
-            MySQL.Sync.execute("UPDATE users SET gang=NULL, gang_rank=NULL WHERE identifier=@identifier", {['@identifier'] = ident})
+            exports.ghmattimysql:execute("UPDATE users SET gang=NULL, gang_rank=NULL WHERE identifier=@identifier", {['@identifier'] = ident})
             TriggerClientEvent('mythic_notify:client:SendAlert', xPlayer.source, { type = 'inform', text = player.firstname .. " " .. player.lastname .. " was removed from ".. gang_data.label .. ".", length = 5000 })
             RemovePlayerData(xPlayer.source)
         end
@@ -209,7 +209,7 @@ local function PromotePlayer(ident,src)
             print("-----")
             if (xPlayer.source ~= nil) then
                 print("--Updated--")
-                MySQL.Sync.execute("UPDATE users SET gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang_rank'] = player.gang_rank + 1, ['@identifier'] = ident})
+                exports.ghmattimysql:execute("UPDATE users SET gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang_rank'] = player.gang_rank + 1, ['@identifier'] = ident})
                 TriggerClientEvent('mythic_notify:client:SendAlert', xPlayer.source, { type = 'inform', text = "Promoted " .. player.firstname .. " " .. player.lastname .. " to ".. getRankData(player.gang, player.gang_rank + 1).label .. ".", length = 5000 })
                 UpdatePlayerClient(xPlayer.source, player.gang, player.gang_rank + 1)
             end
@@ -229,7 +229,7 @@ local function DemotePlayer(ident,src)
     if (getRankData(player.gang, player.gang_rank - 1) ~= nil) then
         if (xPlayer ~= nil) then
             if (xPlayer.source ~= nil) then
-                MySQL.Sync.execute("UPDATE users SET gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang_rank'] = player.gang_rank - 1, ['@identifier'] = ident})
+                exports.ghmattimysql:execute("UPDATE users SET gang_rank=@gang_rank WHERE identifier=@identifier", {['@gang_rank'] = player.gang_rank - 1, ['@identifier'] = ident})
                 TriggerClientEvent('mythic_notify:client:SendAlert', xPlayer.source, { type = 'inform', text = "Demoted " .. player.firstname .. " " .. player.lastname .. " to ".. getRankData(player.gang, player.gang_rank - 1).label .. ".", length = 5000 })
                 UpdatePlayerClient(xPlayer.source, player.gang, player.gang_rank - 1)
             end
@@ -244,7 +244,7 @@ end
 local function UpdateItems(gang_name)
     local gang = gangs[gang_name]
     local pinventory = gang.inventory ~= nil and json.encode(gang.inventory) or nil
-    MySQL.Sync.execute("UPDATE gangs SET inventory=@inventory WHERE name=@name", {['@name'] = gang_name, ['@inventory'] = pinventory})
+    exports.ghmattimysql:execute("UPDATE gangs SET inventory=@inventory WHERE name=@name", {['@name'] = gang_name, ['@inventory'] = pinventory})
 end
 
 local function DepositItem(_item, amount, id)
@@ -812,19 +812,24 @@ AddEventHandler("Fetch:Gang:Shit", function()
         end
 	   end
 
-    exports.ghmattimysql:execute("select * FROM users WHERE identifier = @idshit ORDER BY gang_rank Desc;", {['idshit'] = steamid}, function(data222)
+
+    exports.ghmattimysql:execute("select * FROM users WHERE identifier = @idshit", {['idshit'] = steamid}, function(data222)
         if data222[1] ~= nil then
+
 
             exports.ghmattimysql:execute("SELECT * FROM users WHERE gang = @ganglol ", {['ganglol'] = data222[1].gang}, function(data)
                 if data[1] ~= nil then
 
+
                     exports.ghmattimysql:execute("SELECT inventory FROM gangs WHERE name = @gangname", {['gangname'] = data222[1].gang}, function(gangshit)
                         if gangshit[1] ~= nil then
+
                             local result = gangs[data222[1].gang].inventory.dcash
 
                             for i =1, #data do
                             local rank_data = getRankData(data222[1].gang, data[i].gang_rank)
                             TriggerClientEvent('Cl:Fetch:Gang', src, data[i], result,rank_data.label)
+
                         end
                         end
                     end)
