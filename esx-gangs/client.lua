@@ -87,7 +87,6 @@ RegisterNUICallback('EnableInvite', function(data,cb)
 end)
 
 RegisterNUICallback('InvitePlayer', function(data,cb) 
-  print("Triggering Invite")
   TriggerServerEvent("esx_gangs:InvitePlayer", data.idshit)
   cb('ok')
 end)
@@ -97,13 +96,10 @@ AddEventHandler("Open:Invite", function()
     invite = nil
     invite = {}
    
-    print("running")
     ESX.TriggerServerCallback('esx_gangs:getInvitablePlayers', function(result)
-      print("running")
       local list = {}
       if result then
         for i=1, #result do
-          print("insertings")
           table.insert(invite, {label = result[i].name .. " (id: ".. result[i].sid ..")", value = result[i].id})
         end
       end
@@ -120,7 +116,6 @@ AddEventHandler("Open:Manage", function()
   mygang = {}
      TriggerServerEvent("Fetch:Gang:Shit")
     Wait(500)
-    print("fetching")
     EnableMenu(true,mygang)
 
 end)
@@ -135,7 +130,6 @@ end)
 
 RegisterNetEvent('Cl:Fetch:Gang')
 AddEventHandler('Cl:Fetch:Gang', function(data,data2,rankss)
-  print("inserted")
   
   table.insert(mygang, {Name = data.name,Id = data.identifier,Rank = rankss, gang = data.gang,gangmoney = data2,namelol = data.firstname, namelol2 = data.lastname})
 end)
