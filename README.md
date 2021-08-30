@@ -15,7 +15,7 @@
 
 ### Preview
 
-
+Editing so you dont need Ghmattimysql and mysql-async It will just slow down your server 
 
 https://streamable.com/1x4zef
 
