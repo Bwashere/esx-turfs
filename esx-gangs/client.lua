@@ -22,8 +22,27 @@ local last_zone = nil
 
 
 
+-- Brackzz LOL
+-- [/Turfs Command] 
+RegisterCommand("turfs", function() -- kaBam
+		-- Magic Below
+    local turfString = ""
+	  for i, v in pairs(zones) do
+        if v.capturing == true then
+             turfString = turfString .. v.Label .. " is being captured.\n"
+        end
+    end
+-- Turf Strin
+    if turfString == "" then
+        turfString = "No Zones Are Being Captured."
+    end
 
-
+    TriggerEvent('chat:addMessage', {
+      color = { 0, 0, 255 }, -- Change Color by rgb color codes not hard lol - brackzz
+      multiline = true,
+      args = {"[Esx-Turfs]", turfString}
+    })
+end)
 
 
 
